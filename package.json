@@ -1,0 +1,68 @@
+{
+  "version": "0.1.0-beta.11",
+  "license": "MIT",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "rm -rf dist && mkdir dist && cp package.json ./dist/package.json && yarn esbuild src/index.tsx --external:next --external:react --format=cjs --bundle --outfile=dist/index.js && yarn esbuild src/server.tsx --platform=node --external:next --external:react --format=cjs --bundle --outfile=dist/server.js",
+    "test": "yarn test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "echo \"nah\"",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {
+    "next": ">=10",
+    "react": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "remext",
+  "author": "Ross McMillan",
+  "module": "remext.esm.js",
+  "size-limit": [
+    {
+      "path": "remext.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "remext.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^7.0.3",
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "esbuild": "^0.14.2",
+    "husky": "^7.0.4",
+    "next": "^12.0.6",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "size-limit": "^7.0.3",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@types/multiparty": "^0.0.33",
+    "multiparty": "^4.2.2"
+  }
+}
