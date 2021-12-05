@@ -19,30 +19,28 @@ export default function Home({ name }) {
   const actionData = useActionData()
 
   return (
-    <div>
+    <main>
       <Head>
         <title>{actionData.errorMessage ? 'Error: ' : ''}Remext</title>
       </Head>
 
-      <main>
-        <h1>
-          Welcome to <a href="https://nextjs.org">{name}!(?)</a>
-        </h1>
+      <h1>
+        Welcome to <a href="https://nextjs.org">{name}!(?)</a>
+      </h1>
 
-        {actionData.errorMessage ? (
-          <p style={{ color: 'red' }}>{actionData.errorMessage}</p>
-        ) : null}
+      {actionData.errorMessage ? (
+        <p style={{ color: 'red' }}>{actionData.errorMessage}</p>
+      ) : null}
 
-        <Form>
-          <p>
-            <label>
-              What's better when broken? <input name="answer" />
-            </label>
-          </p>
-          <button type="submit">Submit</button>
-        </Form>
-      </main>
-    </div>
+      <Form>
+        <p>
+          <label>
+            What's better when broken? <input name="answer" />
+          </label>
+        </p>
+        <button type="submit">Submit</button>
+      </Form>
+    </main>
   )
 }
 
