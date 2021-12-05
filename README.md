@@ -24,9 +24,7 @@ export default function Home({ name }) {
         <title>{actionData.errorMessage ? 'Error: ' : ''}Remext</title>
       </Head>
 
-      <h1>
-        Welcome to <a href="https://nextjs.org">{name}!(?)</a>
-      </h1>
+      <h1>Welcome to {name}!</h1>
 
       {actionData.errorMessage ? (
         <p style={{ color: 'red' }}>{actionData.errorMessage}</p>
