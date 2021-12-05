@@ -51,7 +51,12 @@ export const Form: Form = ({
   }
 
   return (
-    <form method={method} onSubmit={onSubmit} {...props}>
+    <form
+      method={method}
+      onSubmit={onSubmit}
+      encType="multipart/form-data"
+      {...props}
+    >
       {children}
     </form>
   )
