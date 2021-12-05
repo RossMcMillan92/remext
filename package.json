@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0-beta.17",
+  "version": "0.1.0",
   "license": "MIT",
   "browserslist": "ie 11, not dead",
   "main": "index.js",

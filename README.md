@@ -6,6 +6,8 @@ Note, this doesn't mirror the API exactly. It is very basic and will undoubtedly
 
 ## Example
 
+[Visit the live version of this example](https://remext-example.vercel.app/). Try disabling JavaScript too.
+
 ```js
 // pages/index.js
 
