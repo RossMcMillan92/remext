@@ -21,11 +21,10 @@ export const Form: Form = ({
   const router = useRouter()
   const [, setActionData] = _useActionDataSetter()
   const method = methodProp.toUpperCase()
-  const actionUrl = addActionQueryParam(action)
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const actionUrl = addActionQueryParam(action ?? document.location.pathname)
+    const actionUrl = action ?? document.location.pathname
     const response = await fetch(
       new Request(actionUrl, {
         body: new FormData(event.target as HTMLFormElement),
@@ -53,7 +52,7 @@ export const Form: Form = ({
 
   return (
     <form
-      action={actionUrl}
+      action={action}
       method={method}
       onSubmit={onSubmit}
       encType="multipart/form-data"
@@ -63,6 +62,3 @@ export const Form: Form = ({
     </form>
   )
 }
-
-const addActionQueryParam = (action: string) =>
-  `${action}${action.includes('?') ? '&' : '?'}__a`
