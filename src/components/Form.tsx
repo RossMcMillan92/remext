@@ -27,13 +27,20 @@ export const Form: Form = ({
     const actionUrl = action ?? document.location.pathname
     const response = await fetch(
       new Request(actionUrl, {
-        body: new FormData(event.target as HTMLFormElement),
-        headers: { 'x-fetch': 'true' },
+        body: new URLSearchParams(
+          (new FormData(event.target as HTMLFormElement) as unknown) as string
+        ).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'x-fetch': 'true',
+        },
         method,
       })
     )
 
-    if ([301, 302, 307, 308].includes(response.status)) {
+    if (
+      [301, 302, 303, 304, 305, 306, 307, 308, 309].includes(response.status)
+    ) {
       router.push((await response.json()).__REDIRECT_LOCATION__)
       return
     }
@@ -55,7 +62,7 @@ export const Form: Form = ({
       action={action}
       method={method}
       onSubmit={onSubmit}
-      encType="multipart/form-data"
+      encType="application/x-www-form-urlencoded"
       {...props}
     >
       {children}

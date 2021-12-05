@@ -1,10 +1,10 @@
-import multiparty from 'multiparty'
 import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import { JSONSerializable } from './types'
+import parse from 'urlencoded-body-parser'
 
 type GetServerSidePropsContextWithBody = GetServerSidePropsContext & {
   body: {
-    [x: string]: string | string[] | multiparty.File | multiparty.File[]
+    [x: string]: string | string[]
   }
 }
 
@@ -20,78 +20,51 @@ type withRemext = (
 export const withRemext: withRemext = (action, loader) => async ctx => {
   if (ctx.req.method === 'GET') return loader(ctx)
 
-  const form = new multiparty.Form()
-  return new Promise((resolve, reject) => {
-    form.parse(
-      ctx.req,
-      async (
-        err,
-        fields: { [x: string]: string[] },
-        files: { [x: string]: string[] }
-      ) => {
-        if (err) {
-          reject(err)
-          return
-        }
+  const body = (await parse(ctx.req)) as { [x: string]: string }
+  console.log('🚀 ~ file: withRemext.ts ~ line 25 ~ body', body)
 
-        const body = Object.fromEntries(
-          Object.entries({
-            ...fields,
-            ...files,
-          }).map(([key, value]) => [key, value.length === 1 ? value[0] : value])
-        )
+  const { __statusCode, ...actionResult } = ((await action({
+    ...ctx,
+    body,
+  })) ?? {}) as RemextActionDataProps
 
-        const { __statusCode, ...actionResult } = ((await action({
-          ...ctx,
-          body,
-        })) ?? {}) as RemextActionDataProps
+  const isFetch = ctx.req.headers['x-fetch']
+  const redirect = ((actionResult as unknown) as RemextRedirectProps)?.redirect
 
-        const isFetch = ctx.req.headers['x-fetch']
-        const redirect = ((actionResult as unknown) as RemextRedirectProps)
-          ?.redirect
+  if (redirect && isFetch) {
+    ctx.res.writeHead(redirect.statusCode, {
+      'Content-Type': 'application/json',
+    })
+    ctx.res.end(JSON.stringify({ __REDIRECT_LOCATION__: redirect.destination }))
+    return { props: {} }
+  }
 
-        if (redirect && isFetch) {
-          ctx.res.writeHead(redirect.statusCode, {
-            'Content-Type': 'application/json',
-          })
-          ctx.res.end(
-            JSON.stringify({ __REDIRECT_LOCATION__: redirect.destination })
-          )
-          resolve({ props: {} })
-          return
-        }
+  if (redirect) {
+    return {
+      redirect: { destination: redirect.destination, statusCode: 302 },
+    }
+  }
 
-        if (redirect) {
-          resolve({
-            redirect: { destination: redirect.destination, statusCode: 302 },
-          })
-          return
-        }
+  if (isFetch) {
+    ctx.res.writeHead(__statusCode, {
+      'Content-Type': 'application/json',
+    })
+    ctx.res.end(JSON.stringify(actionResult.props))
+    return { props: {} }
+  }
 
-        if (isFetch) {
-          ctx.res.writeHead(__statusCode, {
-            'Content-Type': 'application/json',
-          })
-          ctx.res.end(JSON.stringify(actionResult.props))
-          resolve({ props: {} })
-          return
-        }
-
-        const loaderResult = ((await loader?.(ctx)) ?? {}) as {
-          props: Record<string, JSONSerializable>
-        }
-        resolve({
-          ...loaderResult,
-          props: {
-            ...loaderResult.props,
-            ...((actionResult as RemextActionDataProps).props
-              ? (actionResult as RemextActionDataProps).props
-              : actionResult),
-          },
-        })
-      }
-    )
-  })
+  const loaderResult = ((await loader?.(ctx)) ?? {}) as {
+    props: Record<string, JSONSerializable>
+  }
+  return {
+    ...loaderResult,
+    props: {
+      ...loaderResult.props,
+      ...((actionResult as RemextActionDataProps).props
+        ? (actionResult as RemextActionDataProps).props
+        : actionResult),
+    },
+  }
 }
 
 type RemextActionDataProps = {
