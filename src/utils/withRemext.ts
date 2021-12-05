@@ -19,8 +19,8 @@ type withRemext = (
 
 export const withRemext: withRemext = (action, loader) => async ctx => {
   if (ctx.req.method === 'GET') return loader(ctx)
-  const form = new multiparty.Form()
 
+  const form = new multiparty.Form()
   return new Promise((resolve, reject) => {
     form.parse(
       ctx.req,
@@ -40,6 +40,7 @@ export const withRemext: withRemext = (action, loader) => async ctx => {
             ...files,
           }).map(([key, value]) => [key, value.length === 1 ? value[0] : value])
         )
+
         const { __statusCode, ...actionResult } = ((await action({
           ...ctx,
           body,
@@ -47,11 +48,12 @@ export const withRemext: withRemext = (action, loader) => async ctx => {
 
         const isFetch = ctx.req.headers['x-fetch']
         const redirect = ((actionResult as unknown) as RemextRedirectProps)
-          ?.__redirect
+          ?.redirect
 
         if (redirect && isFetch) {
-          const statusCode = redirect.permanent ? 308 : 307
-          ctx.res.writeHead(statusCode, { 'Content-Type': 'application/json' })
+          ctx.res.writeHead(redirect.statusCode, {
+            'Content-Type': 'application/json',
+          })
           ctx.res.end(
             JSON.stringify({ __REDIRECT_LOCATION__: redirect.destination })
           )
@@ -60,7 +62,9 @@ export const withRemext: withRemext = (action, loader) => async ctx => {
         }
 
         if (redirect) {
-          resolve({ redirect })
+          resolve({
+            redirect: { destination: redirect.destination, statusCode: 302 },
+          })
           return
         }
 
@@ -85,7 +89,6 @@ export const withRemext: withRemext = (action, loader) => async ctx => {
               : actionResult),
           },
         })
-        return
       }
     )
   })
@@ -104,9 +107,12 @@ export const json: json = (body, statusCode = 200) => {
 }
 
 type RemextRedirectProps = {
-  __redirect: { destination: string; permanent: boolean }
+  redirect: { destination: string; statusCode: number }
 }
-type redirect = (location: string, permanent?: boolean) => RemextRedirectProps
-export const redirect: redirect = (location, permanent = false) => {
-  return { __redirect: { destination: location, permanent } }
+type redirect = (
+  location: string,
+  statusCode?: 301 | 302
+) => RemextRedirectProps
+export const redirect: redirect = (location, statusCode = 302) => {
+  return { redirect: { destination: location, statusCode } }
 }
