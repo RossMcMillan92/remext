@@ -8,20 +8,22 @@ type GetServerSidePropsContextWithBody = GetServerSidePropsContext & {
   }
 }
 
-type withRemext = (
+type withRemext = ({
+  action,
+  loader,
+}: {
   action: (
     ctx: GetServerSidePropsContextWithBody
   ) => Promise<
     ReturnType<json> | ReturnType<redirect> | { [x: string]: JSONSerializable }
-  >,
+  >
   loader: GetServerSideProps
-) => (ctx: GetServerSidePropsContext) => Promise<any>
+}) => (ctx: GetServerSidePropsContext) => Promise<any>
 
-export const withRemext: withRemext = (action, loader) => async ctx => {
-  if (ctx.req.method === 'GET') return loader(ctx)
+export const withRemext: withRemext = ({ action, loader }) => async ctx => {
+  if (ctx.req.method === 'GET') return loader?.(ctx) ?? { props: {} }
 
   const body = (await parse(ctx.req)) as { [x: string]: string }
-  console.log('🚀 ~ file: withRemext.ts ~ line 25 ~ body', body)
 
   const { __statusCode, ...actionResult } = ((await action({
     ...ctx,

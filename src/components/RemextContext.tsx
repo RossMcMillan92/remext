@@ -5,11 +5,11 @@ import { JSONSerializable } from '../utils/types'
 
 type PageProps = AppInitialProps['pageProps']
 
-const ActionDataContext = React.createContext<
+const RemextContext = React.createContext<
   [JSONSerializable, Dispatch<JSONSerializable>]
 >([{}, () => {}])
 
-type ActionDataContextProviderProps = {
+type RemextContextProviderProps = {
   pageProps: PageProps
 } & (
   | {
@@ -21,11 +21,11 @@ type ActionDataContextProviderProps = {
       Component: AppContextType['Component']
     }
 )
-type ActionDataContextProvider = (
-  props: ActionDataContextProviderProps
+type RemextContextProvider = (
+  props: RemextContextProviderProps
 ) => React.ReactElement
 
-export const ActionDataContextProvider: ActionDataContextProvider = ({
+export const RemextContextProvider: RemextContextProvider = ({
   Component,
   children: childrenProp,
   pageProps: { __ACTION_DATA__, ...pageProps },
@@ -38,13 +38,12 @@ export const ActionDataContextProvider: ActionDataContextProvider = ({
     : childrenProp
 
   return (
-    <ActionDataContext.Provider value={[value, setValue]}>
+    <RemextContext.Provider value={[value, setValue]}>
       {children?.(pageProps)}
-    </ActionDataContext.Provider>
+    </RemextContext.Provider>
   )
 }
 
-export const _useActionDataSetter = () => React.useContext(ActionDataContext)
+export const _useActionDataSetter = () => React.useContext(RemextContext)
 
-export const useActionData = () =>
-  React.useContext(ActionDataContext)?.[0] ?? {}
+export const useActionData = () => React.useContext(RemextContext)?.[0] ?? {}

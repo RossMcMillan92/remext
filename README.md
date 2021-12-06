@@ -57,7 +57,7 @@ const loader = async () => {
   return { props: { name: 'Remext' } }
 }
 
-export const getServerSideProps = withRemext(action, loader)
+export const getServerSideProps = withRemext({ action, loader })
 ```
 
 ```js
@@ -91,12 +91,10 @@ And a one-off to set things up:
 // pages/_app.js
 
 import { createContext, useContext, useState } from 'react'
-import { ActionDataContextProvider } from 'remext'
+import { RemextContextProvider } from 'remext'
 
 export default function MyApp({ Component, pageProps: { ...pageProps } = {} }) {
-  return (
-    <ActionDataContextProvider pageProps={pageProps} Component={Component} />
-  )
+  return <RemextContextProvider pageProps={pageProps} Component={Component} />
 }
 ```
 
