@@ -93,8 +93,18 @@ And a one-off to set things up:
 import { createContext, useContext, useState } from 'react'
 import { RemextContextProvider } from 'remext'
 
-export default function MyApp({ Component, pageProps: { ...pageProps } = {} }) {
+export default function MyApp({ Component, pageProps }) {
   return <RemextContextProvider pageProps={pageProps} Component={Component} />
+}
+
+// or
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <RemextContextProvider pageProps={pageProps}>
+      {(props) => <Component {...props} />}
+    </RemextContextProvider>
+  )
 }
 ```
 

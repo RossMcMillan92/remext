@@ -14,10 +14,10 @@ type RemextContextProviderProps = {
 } & (
   | {
       children: (props: PageProps) => React.ReactElement
-      Component?: AppContextType['Component']
+      Component?: never
     }
   | {
-      children?: (props: AppInitialProps['pageProps']) => React.ReactElement
+      children?: never
       Component: AppContextType['Component']
     }
 )
@@ -44,6 +44,7 @@ export const RemextContextProvider: RemextContextProvider = ({
   )
 }
 
+/** @internal */
 export const _useActionDataSetter = () => React.useContext(RemextContext)
 
 export const useActionData = () => React.useContext(RemextContext)?.[0] ?? {}
