@@ -2,6 +2,8 @@
 
 This is an experiment in mimicking the action/loader pattern from Remix 🔥. This allows co-location of UI, data reads, and data writes. The pattern also makes it very easy to write code that isn't reliant on client-side JavaScript being enabled.
 
+Don't think about the name too much; I certainly didn't.
+
 Note, this doesn't mirror the API exactly. It uses Next's `getServerSideProps` without altering too much. It is experimental and will undoubtedly have bugs.
 
 ## Example
