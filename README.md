@@ -48,7 +48,7 @@ const action = ({ body, req, res }) => {
   const { answer } = body
 
   if (answer.toLowerCase() === 'egg') {
-    return redirect('/success', true)
+    return redirect('/success')
   }
   return json({
     errorMessage: 'Wrong! Hint: how do you like them in the morning?',
